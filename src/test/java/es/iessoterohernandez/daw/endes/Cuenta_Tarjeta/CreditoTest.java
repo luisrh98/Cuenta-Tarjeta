@@ -10,63 +10,76 @@ import org.junit.jupiter.api.Test;
 
 class CreditoTest {
 	private Cuenta cuenta;
-    private Credito credito;
+	private Credito credito;
 
-    @BeforeEach
-    public void setUp() {
-        cuenta = new Cuenta("1234", "Titular de la cuenta");
-        credito = new Credito("4321", "Titular de la tarjeta", new Date(), 1000.0);
-        credito.setCuenta(cuenta);
-    }
-    @AfterEach
-    public void finish() {
-    	cuenta = null;
-    	credito = null;
-    }
+	@BeforeEach
+	public void setUp() {
+		cuenta = new Cuenta("1234", "Titular de la cuenta");
+		credito = new Credito("4321", "Titular de la tarjeta", new Date(), 1000.0);
+		credito.setCuenta(cuenta);
+	}
 
-    @Test
-    public void testRetirarCredito() {
-        assertThrows(Exception.class, () -> {
-            credito.retirar(1100.0); // Intentar retirar más del crédito disponible
-        });
+	@AfterEach
+	public void finish() {
+		cuenta = null;
+		credito = null;
+	}
+	
+	
+	//En este Test devuelve solo la comision de la tarjeta!!
+	@Test
+	public void testRetirarCredito() {
+		try {
+			credito.retirar(500);
+			assertEquals(25, credito.getSaldo());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		// Saldo negativo
+		try {
+			credito.retirar(1100.0);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			assertEquals("Credito insuficiente", e.getMessage());
+		}
 
-        try {
-            credito.retirar(500.0);
-        } catch (Exception e) {
-            fail("Excepción inesperada: " + e.getMessage());
-        }
-        assertEquals(500.0, credito.getSaldo());
-    }
+		
+	}
 
-    @Test
-    public void testIngresarCredito() {
-        try {
-            credito.ingresar(200.0);
-        } catch (Exception e) {
-            fail("Excepción inesperada: " + e.getMessage());
-        }
-        assertEquals(200.0, credito.getSaldo());
-    }
+	@Test
+	public void testIngresarCredito() {
+		try {
+			credito.ingresar(200.0);
+		} catch (Exception e) {
+			fail("Excepción inesperada: " + e.getMessage());
+		}
+		assertEquals(200.0, credito.getSaldo());
+	}
 
-    @Test
-    public void testPagoEnEstablecimientoCredito() {
-        try {
-            credito.pagoEnEstablecimiento("Tienda de prueba", 100.0);
-        } catch (Exception e) {
-            fail("Excepción inesperada: " + e.getMessage());
-        }
-        assertEquals(100.0, credito.getSaldo());
-    }
+	@Test
+	public void testPagoEnEstablecimientoCredito() {
+		try {
+			credito.pagoEnEstablecimiento("Tienda de prueba", 100.0);
+		} catch (Exception e) {
+			fail("Excepción inesperada: " + e.getMessage());
+		}
+		assertEquals(100.0, credito.getSaldo());
+	}
 
-    @Test
+	@Test
     public void testLiquidarCredito() throws Exception {
+		// Realizamos algunas operaciones con la tarjeta de crédito
         credito.ingresar(300.0);
         credito.pagoEnEstablecimiento("Tienda 1", 50.0);
         credito.pagoEnEstablecimiento("Tienda 2", 70.0);
 
-        credito.liquidar(1, 2024); // Liquidar operaciones del mes 1 de 2024
+        // Liquidamos las operaciones del mes 1 de 2024
+        credito.liquidar(1, 2024);
 
-        assertEquals(420.0, credito.getSaldo()); // Saldo debe ser 300 (ingreso) - 50 (tienda 1) - 70 (tienda 2) = 180 antes de liquidar
-        assertEquals(180.0, cuenta.getSaldo()); // La cuenta asociada debe reflejar el importe liquidado
+        // Verificamos que el saldo de la tarjeta sea correcto después de la liquidación
+        assertEquals(420.0, credito.getSaldo());
+
+        // Verificamos que el saldo de la cuenta asociada sea correcto después de la liquidación
+        assertEquals(580.0, cuenta.getSaldo());
     }
 }

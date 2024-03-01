@@ -16,7 +16,7 @@ public class Debito extends Tarjeta
 	
 	public void ingresar(double x) throws Exception 
 	{
-		this.mCuentaAsociada.retirar("Ingreso en cajero autom�tico", x);
+		this.mCuentaAsociada.ingresar("Ingreso en cajero autom�tico", x);
 	}
 	
 	public void pagoEnEstablecimiento(String datos, double x) throws Exception 
