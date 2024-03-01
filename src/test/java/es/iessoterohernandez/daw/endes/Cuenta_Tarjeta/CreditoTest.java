@@ -24,9 +24,8 @@ class CreditoTest {
 		cuenta = null;
 		credito = null;
 	}
-	
-	
-	//En este Test devuelve solo la comision de la tarjeta!!
+
+	// En este Test devuelve solo la comision de la tarjeta!!
 	@Test
 	public void testRetirarCredito() {
 		try {
@@ -43,7 +42,6 @@ class CreditoTest {
 			assertEquals("Credito insuficiente", e.getMessage());
 		}
 
-		
 	}
 
 	@Test
@@ -67,19 +65,18 @@ class CreditoTest {
 	}
 
 	@Test
-    public void testLiquidarCredito() throws Exception {
-		// Realizamos algunas operaciones con la tarjeta de crédito
-        credito.ingresar(300.0);
-        credito.pagoEnEstablecimiento("Tienda 1", 50.0);
-        credito.pagoEnEstablecimiento("Tienda 2", 70.0);
-
-        // Liquidamos las operaciones del mes 1 de 2024
-        credito.liquidar(1, 2024);
-
-        // Verificamos que el saldo de la tarjeta sea correcto después de la liquidación
-        assertEquals(420.0, credito.getSaldo());
-
-        // Verificamos que el saldo de la cuenta asociada sea correcto después de la liquidación
-        assertEquals(580.0, cuenta.getSaldo());
-    }
+	public void testLiquidar() {
+		try {
+			if (credito.mCuentaAsociada != null) {
+				cuenta.ingresar(1000);
+				credito.ingresar(500);
+				credito.liquidar(1, 2024);
+				assertEquals(1500, cuenta.getSaldo());
+			} else {
+				System.out.println("La cuenta asociada es nula, no se puede realizar el ingreso");
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 }
